@@ -29,7 +29,7 @@ namespace GameProject3
         /// When holding the Right Key, it is false.
         /// 
         /// </summary>
-        public bool flipped;
+        public bool Flipped;
 
         /// <summary>
         /// Determines if we're actively holding the Left 
@@ -78,14 +78,14 @@ namespace GameProject3
             //Check inputs
             if (PressingLeft())
             {
-                flipped = true;
+                Flipped = true;
                 Moving = true;
                 Direction = Movement.Left;
             }
 
             if (PressingRight())
             {
-                flipped = false;
+                Flipped = false;
                 Moving = true;
                 Direction = Movement.Right;
             }
