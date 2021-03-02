@@ -1,1 +1,3 @@
 Source File,Dest File,Processor Type,Content Type,Source File Size,Dest File Size,Build Seconds
+"C:/Users/erkst/OneDrive/Documents/CIS_580/GameProjects/GameProject3/GameProject3/Content/Skeleton Walk.png","C:/Users/erkst/OneDrive/Documents/CIS_580/GameProjects/GameProject3/GameProject3/Content/bin/Windows/Content/Skeleton Walk.xnb","TextureProcessor","Texture2DContent",1818,37837,0.1883781
+"C:/Users/erkst/OneDrive/Documents/CIS_580/GameProjects/GameProject3/GameProject3/Content/SkeletonIdle.png","C:/Users/erkst/OneDrive/Documents/CIS_580/GameProjects/GameProject3/GameProject3/Content/bin/Windows/Content/SkeletonIdle.xnb","TextureProcessor","Texture2DContent",1300,33877,0.0030831
