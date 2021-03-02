@@ -7,3 +7,6 @@ bin/
 GameProject3/obj/
 *.json
 *.cache
+*.csprojAssemblyReference.cache
+*.csprojAssemblyReference
+GameProject3/obj/Debug/
