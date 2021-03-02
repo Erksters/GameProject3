@@ -1,6 +1,9 @@
 *bin/
 bin/
 *obj/
-obj/
 *.vs
+.vs
 *.vs/
+GameProject3/obj/
+*.json
+*.cache

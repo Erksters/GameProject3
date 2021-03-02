@@ -7386,11 +7386,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\erkst\\OneDrive\\Documents\\CIS_580\\GameProjects\\GameProject3\\GameProject3\\GameProject3\\GameProject3.csproj",
+      "projectUniqueName": "C:\\Users\\erkst\\OneDrive\\Documents\\CIS_580\\GameProjects\\GameProject3\\GameProject3\\GameProject3.csproj",
       "projectName": "GameProject3",
-      "projectPath": "C:\\Users\\erkst\\OneDrive\\Documents\\CIS_580\\GameProjects\\GameProject3\\GameProject3\\GameProject3\\GameProject3.csproj",
+      "projectPath": "C:\\Users\\erkst\\OneDrive\\Documents\\CIS_580\\GameProjects\\GameProject3\\GameProject3\\GameProject3.csproj",
       "packagesPath": "C:\\Users\\erkst\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\erkst\\OneDrive\\Documents\\CIS_580\\GameProjects\\GameProject3\\GameProject3\\GameProject3\\obj\\",
+      "outputPath": "C:\\Users\\erkst\\OneDrive\\Documents\\CIS_580\\GameProjects\\GameProject3\\GameProject3\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"

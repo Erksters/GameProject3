@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "bXV8sYqCvVRkeCBjwurrmciSHwxfpupZadcpbkpk4SrYZCesxiPKhHNibY3N2lDK9X62Dmk/IafHvM01NUoPow==",
+  "dgSpecHash": "bOfOwKUm+dtRD1c+6rh5nBTJBHd4YCKgWO8VgCocdxwAXcTVkzWh7GEXy+iir4IrMLBTJ83ZtQIAtvP4izsFwA==",
   "success": true,
-  "projectFilePath": "C:\\Users\\erkst\\OneDrive\\Documents\\CIS_580\\GameProjects\\GameProject3\\GameProject3\\GameProject3\\GameProject3.csproj",
+  "projectFilePath": "C:\\Users\\erkst\\OneDrive\\Documents\\CIS_580\\GameProjects\\GameProject3\\GameProject3\\GameProject3.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\erkst\\.nuget\\packages\\libuv\\1.9.1\\libuv.1.9.1.nupkg.sha512",
     "C:\\Users\\erkst\\.nuget\\packages\\microsoft.codeanalysis.analyzers\\1.1.0\\microsoft.codeanalysis.analyzers.1.1.0.nupkg.sha512",
