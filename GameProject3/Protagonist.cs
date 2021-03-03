@@ -118,12 +118,20 @@ namespace GameProject3
         /// </summary>
         public Vector2 HorizontalVelocity = new Vector2(3, 0);
 
+        /// <summary>
+        /// An attribute to be affected by gravitational and jumping forces
+        /// </summary>
         private Vector2 Velocity = new Vector2(0, 0);
 
         /// <summary>
         /// The value of gravity in this environment
         /// </summary>
         public Vector2 Gravity = new Vector2(0, 50);
+
+        /// <summary>
+        /// The value of Jumping in this environment
+        /// </summary>
+        public Vector2 Jump = new Vector2(0, -150);
 
         /// <summary>
         /// Determines where to draw the sprite
@@ -133,7 +141,7 @@ namespace GameProject3
         /// <summary>
         /// Will prevent the user from jumping infinitely
         /// </summary>
-        private int jumpingTimer = 1;
+        private double jumpingTimer = 0;
 
         /// <summary>
         /// Helps determine if the player is on a platform
@@ -166,7 +174,7 @@ namespace GameProject3
         /// <param name="pressingShift">determines if we are pressing the shift key</param>
         public void Update(GameTime gameTime, Movement direction, bool moving, bool flipTexture, bool jumping, bool attacking, bool pressingShift, bool onPlatform, bool stopLeftMovement, bool stopRightMovement , bool stopJump, bool stopFall , bool stopMoving)
         {
-
+            #region Load in Updates
             //Update state of protagonist
             Direction = direction;
             Moving = moving;
@@ -175,6 +183,7 @@ namespace GameProject3
             Attacking = attacking;
             Shift = pressingShift;
             OnPlatform = onPlatform;
+            #endregion
 
             if (stopMoving)
             {
@@ -182,31 +191,81 @@ namespace GameProject3
             }
 
             //TODO: Get the protagonist to move correctly
-            switch (direction)
+            switch (Direction)
             {
                 case Movement.Idle:
                     break;
                 case Movement.Left:
                     Position += -HorizontalVelocity * SpeedMultiplier;
-                    RectangleBounds.X += Position.X;
-                    RectangleBounds.Y += Position.Y;
-
+                    updateBounds();
                     break;
 
                 case Movement.Right:
                     Position += HorizontalVelocity * SpeedMultiplier;
-                    RectangleBounds.X += Position.X;
-                    RectangleBounds.Y += Position.Y;
+                    updateBounds();
                     break;
 
                 case Movement.Up:
+                    OnPlatform = false;
                     break;
                 case Movement.Down:
                     break;
             }
+            jumpingTimer += gameTime.ElapsedGameTime.TotalSeconds;
 
-            applyGravity(gameTime);
-     
+            if (Jumping && OnPlatform && !stopJump) 
+            {
+                jump(gameTime);
+
+                
+                //If we need to stop jumping
+                if(jumpingTimer > 3) 
+                { 
+                    Jumping = false;
+                    jumpingTimer = 0;
+                    Jump = new Vector2(0, -150);
+                }
+                OnPlatform = false;
+            }
+
+
+            //TODO: Determine if we want to always apply gravity
+            //I don't think we should
+            if(OnPlatform == false)
+            {
+                applyGravity(gameTime);
+            }
+
+            //We are falling, We landed, so keep the horizontal 
+            //Velocity, but reset gravity and jumping forces
+            if (stopFall)
+            {
+                Velocity = new Vector2(Velocity.X, 0);
+            }
+        }
+
+        /// <summary>
+        /// Helper method to place the force of a jump on our protagonists position
+        /// </summary>
+        /// <param name="gameTime"></param>
+        private void jump(GameTime gameTime)
+        {
+            if (Jump.Y > 0) { return; }
+            Position += Jump * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            updateBounds();
+            //Decrement the Jump power 
+            Jump += new Vector2(0, 1);
+            
+
+        }
+
+        /// <summary>
+        /// Helper method to update the bounds after updating the Position
+        /// </summary>
+        private void updateBounds()
+        {
+            RectangleBounds.X += Position.X;
+            RectangleBounds.Y += Position.Y;
         }
 
         /// <summary>
@@ -267,6 +326,7 @@ namespace GameProject3
         {
             Velocity += Gravity * (float)gameTime.ElapsedGameTime.TotalSeconds;
             Position += Velocity * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            updateBounds();
         }
 
         /// <summary>

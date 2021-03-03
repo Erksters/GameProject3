@@ -21,7 +21,7 @@ namespace GameProject3
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-            protagonist = new Protagonist(this, new Vector2(40, 40));
+            protagonist = new Protagonist(this, new Vector2(40, 400));
             IO = new InputManager();
             base.Initialize();
         }
@@ -39,7 +39,11 @@ namespace GameProject3
 
             // TODO: Add your update logic here
             IO.Update(gameTime);
-            protagonist.Update(gameTime,IO.Direction,IO.Moving, IO.Flipped, IO.Jumping, IO.Attacking, IO.Shift, true, false, false, false, false, false);
+
+            //Gametime, Direction, Moving, Flipped, Jumping, Attacking, Shift, 
+            protagonist.Update(gameTime,IO.Direction,IO.Moving, IO.Flipped, IO.Jumping, IO.Attacking, IO.Shift, 
+                //on platform, stop left movement, stop right movement, stop jump, stop fall, stop all moving
+                  true,           false,                 false,          false,     false,     false);
 
             base.Update(gameTime);
         }
@@ -51,6 +55,7 @@ namespace GameProject3
             // TODO: Add your drawing code here
             _spriteBatch.Begin();
             protagonist.Draw(gameTime, _spriteBatch);
+            
             _spriteBatch.End();
 
             base.Draw(gameTime);

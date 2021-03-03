@@ -71,7 +71,6 @@ namespace GameProject3
             currentKeyboardState = Keyboard.GetState();
             Direction = Movement.Idle;
             Moving = false;
-            Jumping = false;
             Attacking = false;
             Shift = false;
 
@@ -95,7 +94,12 @@ namespace GameProject3
                 Direction = Movement.Up;
                 Jumping = true;
             }
-            
+
+            if (StoppedUp())
+            {
+                Jumping = false;
+            }
+
             if(PressingDown())
             {
                 Direction = Movement.Down;
@@ -169,6 +173,20 @@ namespace GameProject3
             {
                 return false;
             }
+        }
+
+        private bool StoppedUp()
+        {
+            if (priorKeyboardState.IsKeyDown(Keys.Up) && currentKeyboardState.IsKeyUp(Keys.Up)
+                  || priorKeyboardState.IsKeyDown(Keys.W) && currentKeyboardState.IsKeyUp(Keys.W))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+            
         }
 
         /// <summary>
