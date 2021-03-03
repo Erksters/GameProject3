@@ -8,6 +8,8 @@ namespace GameProject3
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
+        private Protagonist protagonist;
+        private InputManager IO;
 
         public GameProject3()
         {
@@ -19,32 +21,37 @@ namespace GameProject3
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-
+            protagonist = new Protagonist(this, new Vector2(40, 40));
+            IO = new InputManager();
             base.Initialize();
         }
 
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
-
             // TODO: use this.Content to load your game content here
+            protagonist.LoadContent(Content);
         }
 
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
+            if (IO.Exit) { Exit(); }
 
             // TODO: Add your update logic here
+            IO.Update(gameTime);
+            protagonist.Update(gameTime,IO.Direction,IO.Moving, IO.Flipped, IO.Jumping, IO.Attacking, IO.Shift, true, false, false, false, false, false);
 
             base.Update(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.Blue);
 
             // TODO: Add your drawing code here
+            _spriteBatch.Begin();
+            protagonist.Draw(gameTime, _spriteBatch);
+            _spriteBatch.End();
 
             base.Draw(gameTime);
         }

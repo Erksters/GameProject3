@@ -126,8 +126,8 @@ namespace GameProject3
         /// <returns></returns>
         private bool PressingLeft()
         {
-            if (currentKeyboardState.IsKeyDown(Keys.Left) && priorKeyboardState.IsKeyUp(Keys.Left)
-                   || currentKeyboardState.IsKeyDown(Keys.A) && priorKeyboardState.IsKeyUp(Keys.A))
+            if (currentKeyboardState.IsKeyDown(Keys.Left) 
+                   || currentKeyboardState.IsKeyDown(Keys.A) )
             {
                 return true;
             }
@@ -143,8 +143,8 @@ namespace GameProject3
         /// <returns></returns>
         private bool PressingRight()
         {
-            if (currentKeyboardState.IsKeyDown(Keys.Right) && priorKeyboardState.IsKeyUp(Keys.Right)
-                   || currentKeyboardState.IsKeyDown(Keys.D) && priorKeyboardState.IsKeyUp(Keys.D))
+            if (currentKeyboardState.IsKeyDown(Keys.Right) 
+                   || currentKeyboardState.IsKeyDown(Keys.D))
             {
                 return true;
             }
