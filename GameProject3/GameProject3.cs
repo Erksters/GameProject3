@@ -41,7 +41,7 @@ namespace GameProject3
             IO.Update(gameTime);
 
             //Gametime, Direction, Moving, Flipped, Jumping, Attacking, Shift, 
-            protagonist.Update(gameTime,IO.Direction,IO.Moving, IO.Flipped, IO.Jumping, IO.Attacking, IO.Shift, 
+            protagonist.Update(gameTime, IO.Status, IO.JumpStatus, IO.Flipped, IO.Shift, 
                 //on platform, stop left movement, stop right movement, stop jump, stop fall, stop all moving
                   true,           false,                 false,          false,     false,     false);
 

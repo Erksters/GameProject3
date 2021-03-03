@@ -19,9 +19,9 @@ namespace GameProject3
         private KeyboardState priorKeyboardState;
 
         /// <summary>
-        /// Vector2 Direction for sprite velocity
+        /// Enum to handle what the protagonist should do
         /// </summary>
-        public Movement Direction = Movement.Idle;
+        public ProtagonistState Status = ProtagonistState.Idle;
 
         /// <summary>
         /// Which way is the player facing
@@ -32,15 +32,9 @@ namespace GameProject3
         public bool Flipped;
 
         /// <summary>
-        /// Determines if we're actively holding the Left 
-        /// or Right Keys for moving animation purposes.
-        /// </summary>
-        public bool Moving;
-
-        /// <summary>
         /// Determines if we're jumping
         /// </summary>
-        public bool Jumping;
+        public JumpState JumpStatus;
 
         /// <summary>
         /// Determines if our player is attacking
@@ -69,46 +63,37 @@ namespace GameProject3
             //base state of Input
             priorKeyboardState = currentKeyboardState;
             currentKeyboardState = Keyboard.GetState();
-            Direction = Movement.Idle;
-            Moving = false;
+            Status = ProtagonistState.Idle;
             Attacking = false;
             Shift = false;
 
             //Check inputs
-            if (PressingLeft())
+            if (PressingLeft() && !PressingRight())
             {
                 Flipped = true;
-                Moving = true;
-                Direction = Movement.Left;
+                Status = ProtagonistState.Walking;
             }
 
-            if (PressingRight())
+            if (PressingRight() && !PressingLeft())
             {
                 Flipped = false;
-                Moving = true;
-                Direction = Movement.Right;
+                Status = ProtagonistState.Walking;
             }
 
             if (PressingUp())
             {
-                Direction = Movement.Up;
-                Jumping = true;
-            }
-
-            if (StoppedUp())
-            {
-                Jumping = false;
+                JumpStatus = JumpState.Jumping;
             }
 
             if(PressingDown())
             {
-                Direction = Movement.Down;
+                JumpStatus = JumpState.Falling;
             }
 
             //Attacking
             if (PressingSpace())
             {
-                Attacking = true;
+                Status = ProtagonistState.Attacking;
             }
 
             //Holding Shift
@@ -212,7 +197,7 @@ namespace GameProject3
         /// <returns></returns>
         private bool PressingSpace()
         {
-            if (currentKeyboardState.IsKeyDown(Keys.Space) && priorKeyboardState.IsKeyUp(Keys.Space))
+            if (currentKeyboardState.IsKeyDown(Keys.Space))
             {
                 return true; 
             }

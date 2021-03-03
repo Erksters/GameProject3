@@ -19,6 +19,11 @@ namespace GameProject3
         SpriteEffects spriteEffect;
 
         /// <summary>
+        /// Determines which frame to draw in the template
+        /// </summary>
+        Rectangle source;
+
+        /// <summary>
         /// Helps animate the sprite
         /// </summary>
         private double animationTimer;
@@ -26,13 +31,37 @@ namespace GameProject3
         /// <summary>
         /// Helps animate the sprite
         /// </summary>
-        private short animationFrame;
+        private short idleFrame;
+
+        /// <summary>
+        /// Helps animate the sprite
+        /// </summary>
+        private short walkingFrame;
+
+        /// <summary>
+        /// Helps animate the sprite
+        /// </summary>
+        private short attackingFrame;
+
 
         /// <summary>
         /// Helps animate the sprite
         /// will help loop the animation sprite back to frame 0
         /// </summary>
-        private int totalFrames = 11;
+        private int idleTotalFrames = 10;
+
+        /// <summary>
+        /// Helps animate the sprite
+        /// will help loop the animation sprite back to frame 0
+        /// </summary>
+        private int WalkingTotalFrames = 12;
+
+        /// <summary>
+        /// Helps animate the sprite
+        /// will help loop the animation sprite back to frame 0
+        /// </summary>
+        private int AttackingTotalFrames = 17;
+
 
         /// <summary>
         /// Helps animate the sprite
@@ -51,7 +80,25 @@ namespace GameProject3
         /// </summary>
         private int idleWidth = 24;
 
+        /// <summary>
+        /// width of the animations sprite
+        /// </summary>
         private int movingWidth = 22;
+
+        /// <summary>
+        /// width of the animations sprite
+        /// </summary>
+        private int movingHeight = 33;
+
+        /// <summary>
+        /// width of the animations sprite
+        /// </summary>
+        private int AttackingHeight = 37;
+
+        /// <summary>
+        /// width of the animations sprite
+        /// </summary>
+        private int AttackingWidth = 43;
 
         /// <summary>
         /// texture object to display in the Draw()
@@ -63,12 +110,17 @@ namespace GameProject3
         /// </summary>
         private Texture2D WalkingTexture;
 
+        /// <summary>
+        /// texture object to display in the Draw()
+        /// </summary>
+        private Texture2D AttackTexture;
+
         #endregion
 
         /// <summary>
         /// Vector2 Direction for sprite velocity
         /// </summary>
-        public Movement Direction = Movement.Idle;
+        public ProtagonistState Status = ProtagonistState.Idle;
 
         /// <summary>
         /// Which way is the player facing
@@ -78,20 +130,9 @@ namespace GameProject3
         public bool Flipped;
 
         /// <summary>
-        /// Determines if we're actively holding the Left 
-        /// or Right Keys for moving animation purposes.
-        /// </summary>
-        public bool Moving;
-
-        /// <summary>
         /// Determines if we're jumping
         /// </summary>
-        public bool Jumping;
-
-        /// <summary>
-        /// Determines if our player is attacking
-        /// </summary>
-        public bool Attacking;
+        public JumpState JumpStatus;
 
         /// <summary>
         /// Determines if our player is holding shift
@@ -104,15 +145,16 @@ namespace GameProject3
         private Vector2 initialPosition;
 
         /// <summary>
-        /// Velocity helper and used for speed item upgrades
-        /// </summary>
-        private int SpeedMultiplier = 1;
-
-        /// <summary>
         /// Used for collision detection
         /// </summary>
         public BoundingRectangle RectangleBounds;
 
+        /// <summary>
+        /// Attack hit boxes
+        /// </summary>
+        public BoundingRectangle AttackBounds;
+
+        #region Velocities
         /// <summary>
         /// Used for constant application of speed onto Position property
         /// </summary>
@@ -137,6 +179,12 @@ namespace GameProject3
         /// Determines where to draw the sprite
         /// </summary>
         private Vector2 Position;
+
+        /// <summary>
+        /// Velocity helper and used for speed item upgrades
+        /// </summary>
+        private int SpeedMultiplier = 1;
+        #endregion
 
         /// <summary>
         /// Will prevent the user from jumping infinitely
@@ -172,15 +220,13 @@ namespace GameProject3
         /// <param name="jumping">determines if we are actively holding the up key</param>
         /// <param name="attacking">determines if we are pressing the attack key</param>
         /// <param name="pressingShift">determines if we are pressing the shift key</param>
-        public void Update(GameTime gameTime, Movement direction, bool moving, bool flipTexture, bool jumping, bool attacking, bool pressingShift, bool onPlatform, bool stopLeftMovement, bool stopRightMovement , bool stopJump, bool stopFall , bool stopMoving)
+        public void Update(GameTime gameTime, ProtagonistState status, JumpState jumpStatus, bool flipTexture, bool pressingShift, bool onPlatform, bool stopLeftMovement, bool stopRightMovement , bool stopJump, bool stopFall , bool stopMoving)
         {
             #region Load in Updates
             //Update state of protagonist
-            Direction = direction;
-            Moving = moving;
+            Status = status;
             Flipped = flipTexture;
-            Jumping = jumping;
-            Attacking = attacking;
+            JumpStatus = jumpStatus;
             Shift = pressingShift;
             OnPlatform = onPlatform;
             #endregion
@@ -190,43 +236,39 @@ namespace GameProject3
                 return;
             }
 
+
+
             //TODO: Get the protagonist to move correctly
-            switch (Direction)
+            if(Status == ProtagonistState.Walking)
             {
-                case Movement.Idle:
-                    break;
-                case Movement.Left:
-                    Position += -HorizontalVelocity * SpeedMultiplier;
-                    updateBounds();
-                    break;
+                switch (Flipped)
+                {
+                    case true:
+                        Position += -HorizontalVelocity * SpeedMultiplier;
+                        updateBounds();
+                        break;
 
-                case Movement.Right:
-                    Position += HorizontalVelocity * SpeedMultiplier;
-                    updateBounds();
-                    break;
-
-                case Movement.Up:
-                    OnPlatform = false;
-                    break;
-                case Movement.Down:
-                    break;
+                    case false:
+                        Position += HorizontalVelocity * SpeedMultiplier;
+                        updateBounds();
+                        break;
+                }
             }
             jumpingTimer += gameTime.ElapsedGameTime.TotalSeconds;
 
-            if (Jumping && OnPlatform && !stopJump) 
-            {
-                jump(gameTime);
+            //HandleJump
+            //if (JumpStatus == JumpState.Jumping && OnPlatform && !stopJump) 
+            //{
+            //    jump(gameTime);
 
-                
-                //If we need to stop jumping
-                if(jumpingTimer > 3) 
-                { 
-                    Jumping = false;
-                    jumpingTimer = 0;
-                    Jump = new Vector2(0, -150);
-                }
-                OnPlatform = false;
-            }
+            //    //If we need to stop jumping
+            //    if(jumpingTimer > 3) 
+            //    { 
+            //        jumpingTimer = 0;
+            //        Jump = new Vector2(0, -150);
+            //    }
+            //    OnPlatform = false;
+            //}
 
 
             //TODO: Determine if we want to always apply gravity
@@ -275,32 +317,128 @@ namespace GameProject3
         /// <param name="spriteBatch"></param>
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-            checkTextures();
-
             //Update animation timer
             animationTimer += gameTime.ElapsedGameTime.TotalSeconds;
-
-            //Update animation frame
-            if (animationTimer > animationSpeed)
+            handleSpriteEffect(Flipped);
+            
+            if (Status == ProtagonistState.Attacking)
             {
-                animationTimer -= animationSpeed;
-                animationFrame++;
-                if (animationFrame > 12)
-                {
-                    animationFrame = 0;
-                }
-                if (!Moving && animationFrame > 10)
-                {
-                    animationFrame = 0;
-                }
+                DrawAttack(spriteBatch);
+            }
+            else if (Status == ProtagonistState.Walking)
+            {  
+                DrawWalk(spriteBatch);
+            }
+            else
+            {
+                DrawIdle(spriteBatch);
+            }
+        }
+
+        /// <summary>
+        /// Helper method to help condense Draw()
+        /// Will draw the Attack animation for the protagonist
+        /// </summary>
+        /// <param name="spriteBatch"></param>
+        private void DrawAttack(SpriteBatch spriteBatch)
+        {
+            //Reset the other frames for cleanliness
+            walkingFrame = 0;
+            idleFrame = 0;
+
+            //Update the frame
+            if (animationTimer > 0.1)
+            {
+                animationTimer -= 0.1;
+                attackingFrame++;
             }
 
-            handleSpriteEffect(Flipped);
+            //Loop the frame back to the first image in the texture template
+            if (attackingFrame > AttackingTotalFrames) { attackingFrame = 0; }
 
-            //source = rectangle(Which frame to draw (x-coordinate), Which frame to draw (y-coordinate), width of frame, height of frame
-            var source = new Rectangle(animationFrame * ((Moving) ? movingWidth : idleWidth), 0, ((Moving) ? movingWidth : idleWidth), idleHeight);
+            //Redefine the source rectangle because we are using a different template texture
+            source = new Rectangle(attackingFrame * AttackingWidth, 0, AttackingWidth, AttackingHeight);
 
-            spriteBatch.Draw((Moving ? WalkingTexture : idleTexture), Position, source, Color.White, 0f, new Vector2(idleWidth, idleHeight), 1, spriteEffect, 0);
+            //Draw onto screen :)
+            spriteBatch.Draw(
+                AttackTexture,
+                new Rectangle((int)Position.X, (int)Position.Y, AttackingWidth, AttackingHeight),
+                source,
+                Color.White,
+                0f,
+                new Vector2(0, 0),
+                spriteEffect, 0);
+        }
+
+
+        /// <summary>
+        /// Helper method to help condense Draw()
+        /// Will draw the Idle animation for the protagonist
+        /// </summary>
+        /// <param name="spriteBatch"></param>
+        private void DrawIdle(SpriteBatch spriteBatch)
+        {
+            //reset the other frames for animations cleanliness
+            walkingFrame = 0;
+            attackingFrame = 0;
+
+            //Update the frame
+            if (animationTimer > 0.1)
+            {
+                animationTimer -= 0.1;
+                idleFrame++;
+            }
+
+            //loop back down to the first frame in the template
+            if (idleFrame > idleTotalFrames) { idleFrame = 0; }
+
+            //Redefine the source rectangle because we are using a different template texture
+            source = new Rectangle(idleFrame * idleWidth, 0, idleWidth, idleHeight);
+
+            //Draw onto screen
+            spriteBatch.Draw(
+                idleTexture,
+                new Rectangle((int)Position.X, (int)Position.Y, idleWidth, idleHeight),
+                source,
+                Color.White,
+                0f,
+                new Vector2(0, 0),
+                spriteEffect, 0);
+        }
+
+        /// <summary>
+        /// Helper method to help condense Draw()
+        /// Will draw the Walking animation for the protagonist
+        /// </summary>
+        /// <param name="spriteBatch"></param>
+        private void DrawWalk(SpriteBatch spriteBatch)
+        {
+            //reset the other frames for animations cleanliness
+            attackingFrame = 0;
+            idleFrame = 0;
+
+            //Update the frame
+            if (animationTimer > 0.1)
+            {
+                animationTimer -= 0.1;
+                walkingFrame++;
+            }
+
+            //loop back down to the first frame in the template
+            if (walkingFrame > WalkingTotalFrames) { walkingFrame = 0; }
+
+            //redefine the source rectangle because we are using a different template texture
+            source = new Rectangle(walkingFrame * movingWidth, 0, movingWidth, movingHeight);
+
+            //Draw onto the screen
+            spriteBatch.Draw(
+                WalkingTexture,
+                new Rectangle((int)Position.X, (int)Position.Y, movingWidth, movingHeight),
+                source,
+                Color.White,
+                0f,
+                new Vector2(0, 0),
+                spriteEffect, 0);
         }
 
         /// <summary>
@@ -310,11 +448,9 @@ namespace GameProject3
         {
             Position = initialPosition;
             RectangleBounds = new BoundingRectangle(initialPosition, idleWidth, idleHeight);
-            Jumping = false;
-            Moving = false;
             Shift = false;
             SpeedMultiplier = 1;
-            Direction = Movement.Idle;
+            Status = ProtagonistState.Idle;
         }
 
         /// <summary>
@@ -337,6 +473,7 @@ namespace GameProject3
         {
             idleTexture = content.Load<Texture2D>("SkeletonIdle");
             WalkingTexture = content.Load<Texture2D>("Skeleton Walk");
+            AttackTexture = content.Load<Texture2D>("Skeleton Attack");
         }
 
         /// <summary>
@@ -364,6 +501,7 @@ namespace GameProject3
         {
             if (idleTexture is null) throw new InvalidOperationException("Texture must be loaded to render");
             if (WalkingTexture is null) throw new InvalidOperationException("Texture must be loaded to render");
+            if (AttackTexture is null) throw new InvalidOperationException("Texture must be loaded to render");
         }
     }
 }
