@@ -24,6 +24,21 @@ namespace GameProject3
         Rectangle source;
 
         /// <summary>
+        /// texture object to display in the Draw()
+        /// </summary>
+        private Texture2D idleTexture;
+
+        /// <summary>
+        /// texture object to display in the Draw()
+        /// </summary>
+        private Texture2D WalkingTexture;
+
+        /// <summary>
+        /// texture object to display in the Draw()
+        /// </summary>
+        private Texture2D AttackTexture;
+
+        /// <summary>
         /// Helps animate the sprite
         /// </summary>
         private double animationTimer;
@@ -43,7 +58,6 @@ namespace GameProject3
         /// </summary>
         private short attackingFrame;
 
-
         /// <summary>
         /// Helps animate the sprite
         /// will help loop the animation sprite back to frame 0
@@ -61,7 +75,6 @@ namespace GameProject3
         /// will help loop the animation sprite back to frame 0
         /// </summary>
         private int AttackingTotalFrames = 17;
-
 
         /// <summary>
         /// Helps animate the sprite
@@ -99,24 +112,9 @@ namespace GameProject3
         /// width of the animations sprite
         /// </summary>
         private int AttackingWidth = 43;
-
-        /// <summary>
-        /// texture object to display in the Draw()
-        /// </summary>
-        private Texture2D idleTexture;
-        
-        /// <summary>
-        /// texture object to display in the Draw()
-        /// </summary>
-        private Texture2D WalkingTexture;
-
-        /// <summary>
-        /// texture object to display in the Draw()
-        /// </summary>
-        private Texture2D AttackTexture;
-
         #endregion
 
+        #region State Of Character
         /// <summary>
         /// Vector2 Direction for sprite velocity
         /// </summary>
@@ -130,6 +128,13 @@ namespace GameProject3
         public bool Flipped;
 
         /// <summary>
+        /// Helps determine if the player is on a platform
+        /// if True, the use may apply jump force
+        /// if False, you cannot jump in mid-air
+        /// </summary>
+        public bool OnPlatform;
+
+        /// <summary>
         /// Determines if we're jumping
         /// </summary>
         public JumpState JumpStatus;
@@ -138,12 +143,9 @@ namespace GameProject3
         /// Determines if our player is holding shift
         /// </summary>
         public bool Shift;
+        #endregion
 
-        /// <summary>
-        /// Helper attribute for ResetGame()
-        /// </summary>
-        private Vector2 initialPosition;
-
+        #region Environmental Bounds
         /// <summary>
         /// Used for collision detection
         /// </summary>
@@ -153,8 +155,9 @@ namespace GameProject3
         /// Attack hit boxes
         /// </summary>
         public BoundingRectangle AttackBounds;
+        #endregion
 
-        #region Velocities
+        #region Velocity Constants
         /// <summary>
         /// Used for constant application of speed onto Position property
         /// </summary>
@@ -181,6 +184,11 @@ namespace GameProject3
         private Vector2 Position;
 
         /// <summary>
+        /// Helper attribute for ResetGame()
+        /// </summary>
+        private Vector2 initialPosition;
+
+        /// <summary>
         /// Velocity helper and used for speed item upgrades
         /// </summary>
         private int SpeedMultiplier = 1;
@@ -192,18 +200,11 @@ namespace GameProject3
         private double jumpingTimer = 0;
 
         /// <summary>
-        /// Helps determine if the player is on a platform
-        /// </summary>
-        public bool OnPlatform;
-
-        /// <summary>
         /// public constructor
         /// </summary>
         public Protagonist(Game game, Vector2 initialPosition)
         {
             this.game = game;
-
-            //if(initialPosition == null) { throw new ArgumentException(); }
             Position = initialPosition;
             initialPosition = Position;
             RectangleBounds = new BoundingRectangle(initialPosition, idleWidth, idleHeight);
@@ -236,9 +237,7 @@ namespace GameProject3
                 return;
             }
 
-
-
-            //TODO: Get the protagonist to move correctly
+            //Horizontal Movements
             if(Status == ProtagonistState.Walking)
             {
                 switch (Flipped)
@@ -254,6 +253,8 @@ namespace GameProject3
                         break;
                 }
             }
+
+            //Vertical Movements
             jumpingTimer += gameTime.ElapsedGameTime.TotalSeconds;
 
             //HandleJump
@@ -273,7 +274,7 @@ namespace GameProject3
 
             //TODO: Determine if we want to always apply gravity
             //I don't think we should
-            if(OnPlatform == false)
+            if(OnPlatform == false && JumpStatus == JumpState.Falling)
             {
                 applyGravity(gameTime);
             }
@@ -297,8 +298,18 @@ namespace GameProject3
             updateBounds();
             //Decrement the Jump power 
             Jump += new Vector2(0, 1);
-            
+        }
 
+        /// <summary>
+        /// Helper function for applying gravity onto our position attribute
+        /// Used in Update()
+        /// </summary>
+        /// <param name="gameTime"></param>
+        private void applyGravity(GameTime gameTime)
+        {
+            Velocity += Gravity * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            Position += Velocity * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            updateBounds();
         }
 
         /// <summary>
@@ -319,7 +330,7 @@ namespace GameProject3
         {
             //Update animation timer
             animationTimer += gameTime.ElapsedGameTime.TotalSeconds;
-            handleSpriteEffect(Flipped);
+            handleSpriteEffect();
             
             if (Status == ProtagonistState.Attacking)
             {
@@ -347,9 +358,9 @@ namespace GameProject3
             idleFrame = 0;
 
             //Update the frame
-            if (animationTimer > 0.1)
+            if (animationTimer > animationSpeed)
             {
-                animationTimer -= 0.1;
+                animationTimer -= animationSpeed;
                 attackingFrame++;
             }
 
@@ -370,7 +381,6 @@ namespace GameProject3
                 spriteEffect, 0);
         }
 
-
         /// <summary>
         /// Helper method to help condense Draw()
         /// Will draw the Idle animation for the protagonist
@@ -383,9 +393,9 @@ namespace GameProject3
             attackingFrame = 0;
 
             //Update the frame
-            if (animationTimer > 0.1)
+            if (animationTimer > animationSpeed)
             {
-                animationTimer -= 0.1;
+                animationTimer -= animationSpeed;
                 idleFrame++;
             }
 
@@ -418,9 +428,9 @@ namespace GameProject3
             idleFrame = 0;
 
             //Update the frame
-            if (animationTimer > 0.1)
+            if (animationTimer > animationSpeed)
             {
-                animationTimer -= 0.1;
+                animationTimer -= animationSpeed;
                 walkingFrame++;
             }
 
@@ -454,18 +464,6 @@ namespace GameProject3
         }
 
         /// <summary>
-        /// Helper function for applying gravity onto our position attribute
-        /// Used in Update()
-        /// </summary>
-        /// <param name="gameTime"></param>
-        private void applyGravity(GameTime gameTime)
-        {
-            Velocity += Gravity * (float)gameTime.ElapsedGameTime.TotalSeconds;
-            Position += Velocity * (float)gameTime.ElapsedGameTime.TotalSeconds;
-            updateBounds();
-        }
-
-        /// <summary>
         /// Load the texture sprite for the animation
         /// </summary>
         /// <param name="content"></param>
@@ -481,7 +479,7 @@ namespace GameProject3
         /// Used in Draw()
         /// </summary>
         /// <param name="flipped"></param>
-        private void handleSpriteEffect(bool flipped)
+        private void handleSpriteEffect()
         {
             if (Flipped)
             {
